@@ -7,10 +7,10 @@ description: 多模态工具（豆包 ARK 视觉 + Volink 生图/语音 + 视频
 
 ## 总览
 
-本技能封装一个零依赖 Node 脚本（Node ≥ 18，内置 fetch），为不具备多模态能力的模型提供四项能力。**脚本随本预设附带**，位于本技能目录的 `scripts\multimodal_tool.js`（安装后即 `@@MM_DIR@@\scripts\multimodal_tool.js`）；**API 密钥在同目录的 `.env` 文件里**。安装脚本已经生成 `.env` 并引导填写密钥；若还没填，先请用户配置（见下文「配置 API 密钥」），**不要臆造路径或密钥**。
+本技能封装一个零依赖 Node 脚本（Node ≥ 18，内置 fetch），为不具备多模态能力的模型提供四项能力。**脚本随本预设附带**，位于本技能目录的 `scripts\multimodal_tool.js`（安装后即 `@@MM_DIR@@\scripts\multimodal_tool.js`）；**API 密钥在同目录的 `scripts\.env` 文件里**。安装脚本已经生成 `.env` 并引导填写密钥；若还没填，先请用户配置（见下文「配置 API 密钥」），**不要臆造路径或密钥**。
 
 - 脚本：`@@MM_DIR@@\scripts\multimodal_tool.js`（若该路径未替换，按本技能 base 目录下的 `scripts\multimodal_tool.js` 解析）
-- 配置与密钥：`@@MM_DIR@@\.env`（勿打印、勿外泄密钥）
+- 配置与密钥：`@@MM_DIR@@\scripts\.env`（勿打印、勿外泄密钥）
 - 详细文档：`@@MM_DIR@@\docs\multimodal_readme.md`（不确定参数时先读它）
 
 ## 四个能力与调用方式
@@ -74,7 +74,7 @@ node <脚本> doctor          # 配置自检（排查密钥/模型问题）
 
 ## 配置 API 密钥（首次使用）
 
-密钥在 `@@MM_DIR@@\.env`（安装脚本已生成，若未生成则复制同目录的 `.env.template` 为 `.env`）。需要填三个 Key：
+密钥在 `@@MM_DIR@@\scripts\.env`（安装脚本已生成，若未生成则复制 `scripts` 目录里的 `.env.template` 为 `.env`）。需要填三个 Key：
 
 | 用途 | 环境变量 | 获取方式 |
 | --- | --- | --- |
@@ -101,4 +101,4 @@ node <脚本> video D:\videos\demo.mp4 --frames 8
 
 - 需要 Node.js ≥ 18
 - 需要 ffmpeg/ffprobe 在 PATH（`video` 命令需要）
-- API Key 在技能目录 `.env`，脚本从自身目录自动读取，任何工作目录可用
+- API Key 在 `scripts\.env`，脚本从自身目录自动读取，任何工作目录可用

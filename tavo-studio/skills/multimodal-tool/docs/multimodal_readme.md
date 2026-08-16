@@ -14,7 +14,7 @@
 ## 文件位置与配置
 
 - 脚本：`@@MM_DIR@@\scripts\multimodal_tool.js`
-- 配置：`@@MM_DIR@@\.env`（安装脚本已生成；复制 `.env.template` 为 `.env` 亦可）
+- 配置：`@@MM_DIR@@\scripts\.env`（安装脚本已生成；复制同目录 `.env.template` 为 `.env` 亦可）
 - 详细技能说明：本技能目录的 `SKILL.md`
 
 脚本从**自身目录**与**当前工作目录**自动读取 `.env`（`KEY=VALUE`，支持 `#` 注释与引号值），并优先使用真实环境变量。

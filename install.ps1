@@ -60,7 +60,7 @@ $Files = @(
     'tavo-studio/skills/tavo-roleplay-creator/scripts/make_args.py',
     'tavo-studio/skills/multimodal-tool/SKILL.md',
     'tavo-studio/skills/multimodal-tool/docs/multimodal_readme.md',
-    'tavo-studio/skills/multimodal-tool/.env.template',
+    'tavo-studio/skills/multimodal-tool/scripts/.env.template',
     'tavo-studio/skills/multimodal-tool/scripts/multimodal_tool.js'
 )
 
@@ -125,11 +125,11 @@ foreach ($rel in @(
 Copy-Item -Path (Join-Path $tmp 'tavo-studio') -Destination $dest -Recurse -Force
 
 # Create .env for the bundled multimodal-tool skill (keep an existing one).
-$envPath = Join-Path $mmDir '.env'
+$envPath = Join-Path $mmDir 'scripts\.env'
 if (Test-Path $envPath) {
     Write-Host ".env already exists - keeping it: $envPath"
 } else {
-    Copy-Item (Join-Path $tmp 'tavo-studio\skills\multimodal-tool\.env.template') $envPath
+    Copy-Item (Join-Path $tmp 'tavo-studio\skills\multimodal-tool\scripts\.env.template') $envPath
     if (-not $ArkKey) { $ArkKey = Read-Host 'ARK_API_KEY (Doubao/Volcengine vision; Enter to skip)' }
     if (-not $VolinkImageKey) { $VolinkImageKey = Read-Host 'VOLINK_IMAGE_API_KEY (Enter to skip)' }
     if (-not $VolinkTtsKey) { $VolinkTtsKey = Read-Host 'VOLINK_TTS_API_KEY (Enter to skip)' }
