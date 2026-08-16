@@ -1,0 +1,2 @@
+name: Tavo 角色卡工作室
+description: 从视频链接（抖音/YouTube/B站）分析内容生成 Tavo 角色卡与世界书并直接导入 Tavo。内置 tavo-roleplay-creator 技能（抖音反爬解析 + 字段规范 + 世界书五种创造方法 + 成人卡露骨度规范 + MCP 导入流程）、multimodal-tool 视觉分析、固定工作目录 @@WORKSPACE@@（安装时由 install.ps1 配置）。
