@@ -72,7 +72,7 @@ powershell -ExecutionPolicy Bypass -File scripts\tavo_rpc.ps1 -Url "http://<host
    ```
    存 `@@WORKSPACE@@\图片\`,命名 `{来源}_{序号}.{ext}`。
 
-5. **视觉分析**:用 **multimodal-tool** 技能(脚本路径以该技能文档为准,以下用 <脚本路径> 占位):
+5. **视觉分析**:用本预设自带的 **multimodal-tool** 技能(skills/multimodal-tool,脚本路径以该技能 SKILL.md 为准,以下用 <脚本路径> 占位):
    - 封面/单图: `node <脚本路径> describe "<本地图片路径>" -q "详细外貌细节"`(见下方提问模板)
    - 视频: 下载 mp4 后 `node <脚本路径> video "<本地视频路径>"`(视频直链:视频型作品可从渲染 HTML 里找 `<video>` 标签或 `douyinvod.com` 链接;也可先下载封面图兜底分析)
    - 分析产物与临时文件一律存入 `@@WORKSPACE@@\图片\` 与 `@@WORKSPACE@@\临时\`,用后即删。

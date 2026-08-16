@@ -6,7 +6,7 @@
 ## 功能
 
 - **抖音反爬专项流程**：短链解析 → 无头 Edge 渲染 → douyinpic 签名直链下载（已实测）
-- **视觉分析**：图片/视频交给 `multimodal-tool` 技能分析，提取人物外貌、场景、氛围、台词
+- **视觉分析**：预设自带 `multimodal-tool` 技能（脚本 + 文档），图片/视频分析直接可用，API 密钥安装时自填
 - **高质量角色卡**：对齐库内高质量卡片的写作规范，字段全写满 + Tavo 宏（`{{user}}`/`{{char}}`/`{{setvar::}}` 等）
 - **世界书五种创造方法**：关键词触发型 / 常驻引擎型 / 递归知识树型 / 知识书叠加型 / 主动情景引擎型
 - **成人向卡片露骨度规范**：Lv1-5 尺度阶梯、露骨词汇表、黄腔句式、字段注入模板
@@ -15,8 +15,22 @@
 ## 前置依赖
 
 1. **DeepSeek Harness（DSH）** 已安装并可用
-2. **`multimodal-tool` 技能**（视频/图片视觉分析，自带你自己的 API 密钥）——本预设通过它做视觉分析，路径以该技能文档为准
-3. **Tavo 客户端**：设置 → MCP Server → 启用服务器（默认关闭），并记录 `Server URL` 与 `Authorization: Bearer xxx`
+2. **Tavo 客户端**：设置 → MCP Server → 启用服务器（默认关闭），并记录 `Server URL` 与 `Authorization: Bearer xxx`
+3. **（可选）ffmpeg**：视频分析（抽帧）需要 ffmpeg/ffprobe 在 PATH
+
+> 视觉分析所需的 `multimodal-tool` 技能**已随预设附带**（脚本 + 文档），无需单独安装；只需填写自己的 API 密钥，见下节。
+
+## 配置 API 密钥（视觉分析用）
+
+安装脚本会在 `<DSH_HOME>\.agent-presets\tavo-studio\skills\multimodal-tool\.env` 生成配置文件并引导填写三个 Key（也可跳过，之后自己编辑该文件）：
+
+| 用途 | 环境变量 | 获取方式 |
+| --- | --- | --- |
+| 图片/视频解读（豆包 ARK） | `ARK_API_KEY` | 火山方舟控制台 https://console.volcengine.com/ark |
+| 生图（Volink） | `VOLINK_IMAGE_API_KEY` | Volink 平台 |
+| 语音（Volink TTS） | `VOLINK_TTS_API_KEY` | Volink 平台 |
+
+其余项（Base URL / 模型 / 音色）脚本内置默认值，一般不用改。装完可运行 `node <技能目录>\scripts\multimodal_tool.js doctor` 自检配置。
 
 ## 🚀 一键安装
 
@@ -32,7 +46,8 @@ iwr -useb https://raw.githubusercontent.com/zjdjfjd764/tavo-studio/main/install.
 
 安装时脚本会：
 1. 把预设装到 `%USERPROFILE%\.dsh\.agent-presets\tavo-studio\`（或 `$env:DSH_HOME\.agent-presets\`，已有副本自动备份）
-2. 询问一次**工作目录**（角色卡/世界书/图片保存位置，默认 `%USERPROFILE%\Tavo工作室`）
+2. 询问一次**工作目录**（角色卡/世界书/图片保存位置，默认 `%USERPROFILE%\TavoStudio`）
+3. 引导填写三个 API 密钥（可跳过，之后自己编辑 `.env`）
 
 装完重启 DSH 或刷新预设列表，新会话选择预设 **「Tavo 角色卡工作室」** 即可。
 
@@ -79,10 +94,14 @@ powershell -ExecutionPolicy Bypass -File .\scripts\verify-release.ps1 -Owner zjd
 tavo-studio/
 ├── agent.cordis.yml                  # DSH 预设组合（人格 + 工具 + 技能挂载）
 ├── preset.yml                        # 预设显示名与简介
-└── skills/tavo-roleplay-creator/     # 自带技能
-    ├── SKILL.md                      # 完整工作流（抖音反爬 / 字段规范 / MCP 导入）
-    ├── docs/                         # 字段与宏、世界书五法、露骨度规范
-    └── scripts/                      # tavo_rpc.ps1（MCP JSON-RPC 助手）、make_args.py
+├── skills/tavo-roleplay-creator/     # 角色卡/世界书制作技能
+│   ├── SKILL.md                      # 完整工作流（抖音反爬 / 字段规范 / MCP 导入）
+│   ├── docs/                         # 字段与宏、世界书五法、露骨度规范
+│   └── scripts/                      # tavo_rpc.ps1（MCP JSON-RPC 助手）、make_args.py
+└── skills/multimodal-tool/           # 附带的多模态技能（视觉分析，密钥安装时自填）
+    ├── scripts/multimodal_tool.js    # 零依赖 Node 脚本
+    ├── docs/multimodal_readme.md     # 使用文档
+    └── .env                          # 安装时生成的密钥配置（自己填）
 ```
 
 ## 免责声明

@@ -17,6 +17,9 @@
 # must parse correctly under every PowerShell codepage.
 param(
     [string]$Workspace = '',
+    [string]$ArkKey = '',
+    [string]$VolinkImageKey = '',
+    [string]$VolinkTtsKey = '',
     [switch]$Force
 )
 $ErrorActionPreference = 'Stop'
@@ -54,7 +57,11 @@ $Files = @(
     'tavo-studio/skills/tavo-roleplay-creator/docs/fields-macros.md',
     'tavo-studio/skills/tavo-roleplay-creator/docs/worldbook-patterns.md',
     'tavo-studio/skills/tavo-roleplay-creator/scripts/tavo_rpc.ps1',
-    'tavo-studio/skills/tavo-roleplay-creator/scripts/make_args.py'
+    'tavo-studio/skills/tavo-roleplay-creator/scripts/make_args.py',
+    'tavo-studio/skills/multimodal-tool/SKILL.md',
+    'tavo-studio/skills/multimodal-tool/docs/multimodal_readme.md',
+    'tavo-studio/skills/multimodal-tool/.env.template',
+    'tavo-studio/skills/multimodal-tool/scripts/multimodal_tool.js'
 )
 
 # Locate the DSH user preset root.
@@ -91,6 +98,7 @@ foreach ($f in $Files) {
 }
 
 # Patch the workspace placeholder into the installed files.
+$mmDir = Join-Path $dest 'skills\multimodal-tool'
 foreach ($rel in @(
     'tavo-studio\agent.cordis.yml',
     'tavo-studio\preset.yml',
@@ -102,8 +110,42 @@ foreach ($rel in @(
     [System.IO.File]::WriteAllText($p, $c, (New-Object System.Text.UTF8Encoding($false)))
 }
 
+# Patch the bundled multimodal-tool skill directory into its docs.
+foreach ($rel in @(
+    'tavo-studio\skills\multimodal-tool\SKILL.md',
+    'tavo-studio\skills\multimodal-tool\docs\multimodal_readme.md'
+)) {
+    $p = Join-Path $tmp $rel
+    $c = Get-Content -LiteralPath $p -Raw -Encoding UTF8
+    $c = $c.Replace('@@MM_DIR@@', $mmDir)
+    [System.IO.File]::WriteAllText($p, $c, (New-Object System.Text.UTF8Encoding($false)))
+}
+
 # Move the patched payload into place.
 Copy-Item -Path (Join-Path $tmp 'tavo-studio') -Destination $dest -Recurse -Force
+
+# Create .env for the bundled multimodal-tool skill (keep an existing one).
+$envPath = Join-Path $mmDir '.env'
+if (Test-Path $envPath) {
+    Write-Host ".env already exists - keeping it: $envPath"
+} else {
+    Copy-Item (Join-Path $tmp 'tavo-studio\skills\multimodal-tool\.env.template') $envPath
+    if (-not $ArkKey) { $ArkKey = Read-Host 'ARK_API_KEY (Doubao/Volcengine vision; Enter to skip)' }
+    if (-not $VolinkImageKey) { $VolinkImageKey = Read-Host 'VOLINK_IMAGE_API_KEY (Enter to skip)' }
+    if (-not $VolinkTtsKey) { $VolinkTtsKey = Read-Host 'VOLINK_TTS_API_KEY (Enter to skip)' }
+    function Set-EnvValue([string]$path, [string]$key, [string]$value) {
+        $lines = Get-Content -LiteralPath $path
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match "^$key=") { $lines[$i] = "$key=$value" }
+        }
+        [System.IO.File]::WriteAllLines($path, $lines, (New-Object System.Text.UTF8Encoding($false)))
+    }
+    if ($ArkKey) { Set-EnvValue $envPath 'ARK_API_KEY' $ArkKey }
+    if ($VolinkImageKey) { Set-EnvValue $envPath 'VOLINK_IMAGE_API_KEY' $VolinkImageKey }
+    if ($VolinkTtsKey) { Set-EnvValue $envPath 'VOLINK_TTS_API_KEY' $VolinkTtsKey }
+    Write-Host "API keys saved to $envPath (edit this file to change them later)."
+}
+
 Remove-Item $tmp -Recurse -Force
 
 Write-Host ''
@@ -112,8 +154,9 @@ Write-Host ''
 Write-Host 'Notes:'
 Write-Host "  1. Preset id: $PresetId  (folder: $dest)"
 Write-Host "  2. Workspace for generated files: $Workspace"
-Write-Host '  3. This preset needs the "multimodal-tool" skill for video/image analysis.'
-Write-Host '     Install that skill separately (it carries your own API keys).'
+Write-Host '  3. The "multimodal-tool" skill (video/image analysis) is bundled.'
+Write-Host "     Its API keys live in: $envPath"
+Write-Host '     Fill in ARK_API_KEY / VOLINK_IMAGE_API_KEY / VOLINK_TTS_API_KEY there.'
 Write-Host '  4. You also need a running Tavo MCP server; the agent will ask for its URL/token.'
 Write-Host '  5. In DSH, start a new session and pick the installed "tavo-studio" preset'
 Write-Host '     (or restart DSH so the preset list refreshes).'

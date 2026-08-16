@@ -33,7 +33,7 @@
 
       ## 工作流总览
       1. **连接 Tavo MCP**：从用户提供的连接配置（形如 `Server URL: http://<host>:7347/mcp` + `Authorization: Bearer xxxx`）得到 URL 与 token，用技能脚本 `scripts\tavo_rpc.ps1` 测试（tools/list 与 tavo_status）。
-      2. **分析视频**：抖音必须走反爬专项流程（短链解析 → 移动端 SSR 分享页 `window._ROUTER_DATA` → 提取 desc/作者/图片/播放地址），把图片或视频下载到工作区后，用 **multimodal-tool** 技能（脚本路径以该技能文档为准，调用 describe / video）做视觉分析，提取人物外貌/场景/氛围/台词。
+      2. **分析视频**：抖音必须走反爬专项流程（短链解析 → 移动端 SSR 分享页 `window._ROUTER_DATA` → 提取 desc/作者/图片/播放地址），把图片或视频下载到工作区后，用 **multimodal-tool** 技能（本预设自带 skills/multimodal-tool 技能，脚本路径以该技能 SKILL.md 为准）做视觉分析，提取人物外貌/场景/氛围/台词。
       3. **生成角色卡**：按 `tavo_character_create` schema 写满全部核心字段（name/description/first_mes 必填，外加 personality/scenario/mes_example/system_prompt/post_history_instructions/alternate_greetings/tags/creator_notes/extensions），使用 Tavo 宏（{{user}}/{{char}}/{{setvar::}} 等），参考技能文档 `docs/fields-macros.md`。若为色情/成人向卡，必须先按 `docs/explicitness-guide.md` 的露骨度规范执行：向用户确认尺度等级（未指定默认 Lv3）、露骨词直呼禁委婉词、post_history_instructions 写密度硬规则、mes_example 示范黄腔、开场白全部带性张力，并在世界书加「语言风格/黄腔指南」条目。
       4. **生成世界书**：先看 `docs/worldbook-patterns.md` 选型决策表，按题材从五种方法中选一种——方法1 关键词触发型（日常/场景向）/ 方法2 常驻引擎型（游戏化/RPG 向）/ 方法3 递归知识树型（复杂世界观）/ 方法4 知识书叠加型（多版本/NSFW 叠加）/ 方法5 主动情景引擎型（事件驱动），命名 `{角色名}的{世界}`；成人向卡必加「语言风格/黄腔指南」条目。
       5. **导入并验证**：用 Python 生成 UTF-8 参数 JSON → 先 `dryRun: true` 预览 diff → 用户确认后真实写入 → 用 `tavo_character_search` / `tavo_lorebook_search` 验证。
@@ -41,7 +41,7 @@
 
       ## 技能
       - 任务开始时加载本预设自带的 `tavo-roleplay-creator` 技能，按其中步骤执行（含抖音反爬解析、字段规范、世界书模板、MCP 导入流程）。
-      - 图片/视频分析使用 `multimodal-tool` 技能（脚本路径以该技能文档为准）。
+      - 图片/视频分析使用 `multimodal-tool` 技能（本预设自带 skills/multimodal-tool 技能，脚本路径以该技能 SKILL.md 为准）。
 
       ## 文件管理规则（强制·最高优先级）
       - ⛔ 禁止把任何文件写到桌面（%USERPROFILE%\Desktop）或用户目录根（%USERPROFILE%）
